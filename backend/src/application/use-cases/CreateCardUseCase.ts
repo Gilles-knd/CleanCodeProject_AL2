@@ -1,17 +1,12 @@
-import {Card} from "../../domain/entities/Card";
-import { v4 as uuidv4 } from 'uuid';
-export class CreateCardUseCase {
-    constructor(private cardRepository: ICardRepository) {}
+import { CardAdapter } from "../../infrastructure/adapters/CardAdapter";
+import { ICardRepository } from "../../domain/repositories/ICardRepository";
+import {CardDTO} from "../dtos/CardDTO";
 
-    async execute(data: { question: string, answer: string, tag?: string }): Promise<Card> {
-        const card = new Card(
-            uuidv4(),
-            data.question,
-            data.answer,
-            undefined,
-            undefined,
-            data.tag
-        );
-        return this.cardRepository.save(card);
+export class CreateCardUseCase {
+    constructor(private repository: ICardRepository) {}
+
+    async execute(dto: CardDTO): Promise<void> {
+        const card = CardAdapter.fromDTOtoDomain(dto);
+        await this.repository.save(card);
     }
 }
