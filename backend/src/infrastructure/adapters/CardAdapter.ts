@@ -1,18 +1,15 @@
 import { Card } from "../../domain/entities/Card";
-import { Category } from "@prisma/client";
-import { v4 as uuidv4 } from 'uuid';
-import {CardDTO} from "../../application/dtos/CardDTO";
+import { CardDTO } from "../../application/dtos/CardDTO";
+import { Category } from "../../domain/types/Category";
 
 export class CardAdapter {
-    static fromDTOtoDomain(dto: CardDTO): Card {
-        return new Card(
-            uuidv4(),
-            dto.question,
-            dto.answer,
-            Category.FIRST,
-            new Date(),
-            new Date(),
-            dto.tag
-        );
-    }
+  static fromDTOtoDomain(dto: CardDTO): Card {
+    return new Card(
+        undefined,
+        Category.FIRST,
+        dto.question ,
+        dto.answer,
+        dto.tag ?? ''
+    );
+  }
 }

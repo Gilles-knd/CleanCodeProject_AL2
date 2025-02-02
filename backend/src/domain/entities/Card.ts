@@ -1,13 +1,14 @@
-import { Category } from "@prisma/client";
+import { Category } from "../types/Category";
+
 
 export class Card {
-    constructor(
-        public readonly id: string,
-        public readonly question: string,
-        public readonly answer: string,
-        public category: Category,
-        public readonly createdAt: Date,
-        public lastReviewedAt: Date,
-        public readonly tag?: string
-    ) {}
+  constructor(
+      public readonly id: string | undefined,
+      public category: Category,
+      public readonly question: string,
+      public readonly answer: string,
+      public readonly tag?: string ,
+  ) {}
 }
+
+
