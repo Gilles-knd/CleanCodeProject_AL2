@@ -1,5 +1,5 @@
 import { Card } from "../../src/domain/entities/Card";
-import { Category } from "@prisma/client";
+import { Category } from "../../src/domain/types/Category";
 
 describe("Card Entity", () => {
     it("should initialize with given properties", () => {

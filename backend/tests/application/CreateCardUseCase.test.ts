@@ -1,7 +1,7 @@
 import { mock } from "jest-mock-extended";
 import { ICardRepository } from "../../src/domain/repositories/ICardRepository";
 import { CreateCardUseCase } from "../../src/application/use-cases/CreateCardUseCase";
-import { Category } from "@prisma/client";
+import { Category } from "../../src/domain/types/Category";
 import { Card } from "../../src/domain/entities/Card";
 
 describe("CreateCardUseCase", () => {
