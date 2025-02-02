@@ -1,6 +1,6 @@
 import { Card } from "../../domain/entities/Card";
 import { CardDTO } from "../../application/dtos/CardDTO";
-import {Category} from "@prisma/client";
+import { Category } from "../../domain/types/Category";
 
 export class CardAdapter {
   static fromDTOtoDomain(dto: CardDTO): Card {

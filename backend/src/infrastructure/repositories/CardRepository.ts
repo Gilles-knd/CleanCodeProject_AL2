@@ -1,6 +1,7 @@
 import { ICardRepository } from "../../domain/repositories/ICardRepository";
 import db from "../db/prisma";
 import { Card } from "../../domain/entities/Card.ts";
+import {Category} from "../../domain/types/Category.ts";
 
 
 
@@ -18,7 +19,7 @@ export class CardRepository implements ICardRepository {
     return new Card(
         savedCard.id,
         savedCard.question,
-        savedCard.category,
+        savedCard.category as Category,
         savedCard.answer,
         savedCard.tag
     );
