@@ -18,10 +18,10 @@ export class CardRepository implements ICardRepository {
 
     return new Card(
         savedCard.id,
-        savedCard.question,
         savedCard.category as Category,
+        savedCard.question,
         savedCard.answer,
-        savedCard.tag
+        savedCard.tag!,
     );
   }
 }

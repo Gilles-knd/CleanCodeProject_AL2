@@ -9,7 +9,7 @@ describe("CreateCardUseCase", () => {
   const useCase = new CreateCardUseCase(mockRepo);
 
   it("should create a card with FIRST category", async () => {
-    const expectedCard = new Card( "Q", "A", Category.FIRST,"some-id");
+    const expectedCard = new Card( "some-id",Category.FIRST,"Q", "A");
 
     mockRepo.save.mockResolvedValue(expectedCard);
 

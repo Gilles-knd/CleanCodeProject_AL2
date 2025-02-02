@@ -5,9 +5,10 @@ import { Category } from "../../domain/types/Category";
 export class CardAdapter {
   static fromDTOtoDomain(dto: CardDTO): Card {
     return new Card(
-        dto.question,
-        dto.answer,
+        undefined,
         Category.FIRST,
+        dto.question ,
+        dto.answer,
         dto.tag ?? ''
     );
   }

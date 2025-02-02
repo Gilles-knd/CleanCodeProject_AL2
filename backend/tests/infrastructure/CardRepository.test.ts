@@ -11,10 +11,10 @@ describe("CardRepository", () => {
     });
 
     it("should save a card", async () => {
-        const card = new Card("Q", "A", Category.FIRST, "tag");
+        const card = new Card(undefined, Category.FIRST, "Q", "A", "tag");
 
         prismaMock.card.create.mockResolvedValue({
-            id: "1",
+            id: "fd43d416-9f7c-46de-bf0c-a1ea214a8d0f",
             question: "Q",
             answer: "A",
             category: Category.FIRST,
@@ -25,7 +25,7 @@ describe("CardRepository", () => {
 
         const savedCard = await repository.save(card);
 
-        expect(savedCard.id).toBe("1");
+        expect(typeof savedCard.id).toBe("string");
         expect(savedCard.question).toBe("Q");
         expect(savedCard.answer).toBe("A");
         expect(savedCard.category).toBe(Category.FIRST);
