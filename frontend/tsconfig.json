@@ -19,7 +19,13 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@ui/*": ["./src/ui/*"],
+      "@icons": ["./src/ui/atoms/Icon/Icon"],
+      "@context/*": ["./src/ui/context/*"],
+      "@hooks/*": ["./src/ui/hooks/*"],
+      "@helpers": ["./helpers"],
+      "@dictionaries": ["./dictionaries/dictionaries"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
