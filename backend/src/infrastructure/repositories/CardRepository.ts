@@ -48,4 +48,47 @@ export class CardRepository implements ICardRepository {
         card.tag ?? undefined
     ));
   }
+
+  async findById(id: string): Promise<Card | null> {
+    const card = await db.card.findUnique({
+      where: { id }
+    });
+
+    if (!card) return null;
+
+    return new Card(
+        card.userId,
+        card.id,
+        card.category as Category,
+        card.question,
+        card.answer,
+        card.tag ?? undefined
+    );
+  }
+
+  async update(card: Card): Promise<Card> {
+    const updatedCard = await db.card.update({
+      where: { id: card.id },
+      data: {
+        question: card.question,
+        answer: card.answer,
+        tag: card.tag ?? null
+      }
+    });
+
+    return new Card(
+        updatedCard.userId,
+        updatedCard.id,
+        updatedCard.category as Category,
+        updatedCard.question,
+        updatedCard.answer,
+        updatedCard.tag!
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await db.card.delete({
+      where: { id }
+    });
+  }
 }
