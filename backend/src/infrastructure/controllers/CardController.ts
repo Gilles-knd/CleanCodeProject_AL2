@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import { Request, Response} from "express";
 import {CreateCardUseCase} from "../../application/use-cases/CreateCardUseCase";
 import {CardDTO} from "../../application/dtos/CardDTO";
 import {validateOrReject} from "class-validator";
