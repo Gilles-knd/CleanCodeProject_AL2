@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional } from "class-validator";
+import {IsString, IsNotEmpty, IsOptional} from "class-validator";
+import {Category} from "../../domain/types/Category.ts";
 
 export class CardDTO {
   @IsString()
@@ -19,3 +20,12 @@ export class CardDTO {
     this.tag = tag;
   }
 }
+
+export interface CardResponse {
+  id: string;
+  question: string;
+  answer: string;
+  category: Category;
+  tag?: string;
+}
+
