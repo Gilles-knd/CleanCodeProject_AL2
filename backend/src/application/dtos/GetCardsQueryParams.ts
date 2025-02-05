@@ -6,5 +6,5 @@ export class GetCardsQueryParamsDTO {
     @Transform(({ value }) => (typeof value === 'string' ? value.split(',') : value))
     @IsArray()
     @IsString({ each: true })
-    tags?: string[];
+    tag?: string[];
 }

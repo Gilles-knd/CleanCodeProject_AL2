@@ -1,4 +1,5 @@
 import {IsString, IsNotEmpty, IsOptional, IsUUID} from "class-validator";
+import {Category} from "../../domain/types/Category.ts";
 
 export class CardDTO {
   @IsString()
@@ -20,13 +21,11 @@ export class CardDTO {
   }
 }
 
-export class UpdateCardDTO extends CardDTO {
-  @IsUUID()
+export interface CardResponse {
   id: string;
-
-  constructor(id: string, question: string, answer: string, tag?: string) {
-    super(question, answer, tag);
-    this.id = id;
-  }
+  question: string;
+  answer: string;
+  category: Category;
+  tag?: string;
 }
 
