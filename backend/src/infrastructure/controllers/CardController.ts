@@ -8,12 +8,14 @@ import {GetCardsQueryParamsDTO} from "../../application/dtos/GetCardsQueryParams
 import {CardAdapter} from "../adapters/CardAdapter.ts";
 import {UpdateCardUseCase} from "../../application/use-cases/UpdateCardUseCase.ts";
 import {DeleteCardUseCase} from "../../application/use-cases/DeleteCardUseCase.ts";
+import {GetQuizzCardsUseCase} from "../../application/use-cases/GetQuizzCardsUseCase.ts";
 export class CardController {
     constructor(
         private readonly createCardUseCase: CreateCardUseCase,
         private readonly getCardsUseCase: GetCardsUseCase,
         private readonly updateCardUseCase: UpdateCardUseCase,
-        private readonly deleteCardUseCase: DeleteCardUseCase
+        private readonly deleteCardUseCase: DeleteCardUseCase,
+        private readonly getQuizzCardsUseCase: GetQuizzCardsUseCase
     ) {}
 
     async create(req: Request, res: Response) {
@@ -29,14 +31,13 @@ export class CardController {
 
             const card = await this.createCardUseCase.execute(req.user.id!, dto);
             res.status(201).json({
-                data: {
                     id: card.id,
                     question: card.question,
                     answer: card.answer,
                     category: card.category,
                     tag: card.tag
                 }
-            });
+            );
             return;
         } catch (error: any) {
             res.status(400).json({ error: error.message || 'Invalid request' });
@@ -51,9 +52,9 @@ export class CardController {
 
             const cards = await this.getCardsUseCase.execute(queryParams.tag);
 
-            res.status(200).json({
-                data: cards.map(card => CardAdapter.toResponse(card))
-            });
+            res.status(200).json(
+                cards.map(card => CardAdapter.toResponse(card))
+            );
             return;
         } catch (error: any) {
             res.status(400).json({ error: error.message || 'Failed to fetch cards' });
@@ -93,6 +94,7 @@ export class CardController {
 
     async delete(req: Request, res: Response) {
         try {
+
             const { cardId } = req.params;
 
             if (!req.user || req.user.id === undefined) {
@@ -113,6 +115,34 @@ export class CardController {
                 return;
             }
             res.status(400).json({ error: error.message || 'Invalid request' });
+            return;
+        }
+    }
+
+    async getQuizz(req: Request, res: Response) {
+        try {
+            if (!req.user || req.user.id === undefined) {
+                res.status(401).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const targetDate = req.query.date as string | undefined;
+            const cards = await this.getQuizzCardsUseCase.execute(
+                req.user.id,
+                targetDate
+            );
+
+            res.status(200).json(cards.map(card => CardAdapter.toResponse(card))
+            );
+            return;
+        } catch (error: any) {
+            if (error.message === 'Invalid date format') {
+                res.status(400).json({ error: 'Invalid date format' });
+                return;
+            }
+            res.status(500).json({
+                error: error.message || 'Failed to fetch quizz cards'
+            });
             return;
         }
     }

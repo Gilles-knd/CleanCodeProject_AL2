@@ -66,6 +66,31 @@ export class CardRepository implements ICardRepository {
     );
   }
 
+  async findByUserId(userId: number): Promise<Card[]> {
+    const cards = await db.card.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        question: true,
+        answer: true,
+        tag: true,
+        category: true,
+        userId: true,
+        lastReviewedAt: true
+      }
+    });
+
+    return cards.map(card => new Card(
+        card.userId,
+        card.id,
+        card.category as Category,
+        card.question,
+        card.answer,
+        card.tag ?? undefined,
+        card.lastReviewedAt
+    ));
+  }
+
   async update(card: Card): Promise<Card> {
     const updatedCard = await db.card.update({
       where: { id: card.id },
@@ -87,6 +112,7 @@ export class CardRepository implements ICardRepository {
   }
 
   async delete(id: string): Promise<void> {
+
     await db.card.delete({
       where: { id }
     });

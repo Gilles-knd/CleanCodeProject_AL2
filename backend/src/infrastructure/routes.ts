@@ -7,6 +7,7 @@ import {CreateCardUseCase} from "../application/use-cases/CreateCardUseCase.ts";
 import {GetCardsUseCase} from "../application/use-cases/GetCardsUseCase.ts";
 import {UpdateCardUseCase} from "../application/use-cases/UpdateCardUseCase.ts";
 import {DeleteCardUseCase} from "../application/use-cases/DeleteCardUseCase.ts";
+import {GetQuizzCardsUseCase} from "../application/use-cases/GetQuizzCardsUseCase.ts";
 
 export const initRoutes = (app: express.Express) => {
   const cardRepository = new CardRepository();
@@ -17,12 +18,15 @@ export const initRoutes = (app: express.Express) => {
   const getCardsUseCase = new GetCardsUseCase(cardRepository);
   const updateCardUseCase = new UpdateCardUseCase(cardRepository);
   const deleteCardUseCase = new DeleteCardUseCase(cardRepository);
+  const getQuizzCardsUseCase = new GetQuizzCardsUseCase(cardRepository);
 
   const cardController = new CardController(
       createCardUseCase,
       getCardsUseCase,
       updateCardUseCase,
-      deleteCardUseCase
+      deleteCardUseCase,
+      getQuizzCardsUseCase
+
   );
 
   app.use(authMiddleware.auth());
@@ -35,4 +39,5 @@ export const initRoutes = (app: express.Express) => {
   app.get('/cards', cardController.getAll.bind(cardController));
   app.put('/cards/:cardId', cardController.update.bind(cardController));
   app.delete('/cards/:cardId', cardController.delete.bind(cardController));
+  app.get('/cards/quizz', cardController.getQuizz.bind(cardController));
 };
