@@ -27,7 +27,7 @@ export const initRoutes = (app: express.Express) => {
       checkQuizAvailabilityUseCase
   );
   const reviewRepository = new ReviewRepository();
-  const answerCardUseCase = new AnswerCardUseCase(cardRepository, reviewRepository);
+  const answerCardUseCase = new AnswerCardUseCase(cardRepository, reviewRepository,getQuizzCardsUseCase);
 
   const cardController = new CardController(
       createCardUseCase,

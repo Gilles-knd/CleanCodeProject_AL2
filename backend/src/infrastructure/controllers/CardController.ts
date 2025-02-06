@@ -10,7 +10,6 @@ import {UpdateCardUseCase} from "../../application/use-cases/UpdateCardUseCase.t
 import {DeleteCardUseCase} from "../../application/use-cases/DeleteCardUseCase.ts";
 import {GetQuizzCardsUseCase} from "../../application/use-cases/GetQuizzCardsUseCase.ts";
 import {AnswerCardUseCase} from "../../application/use-cases/AnswerCardUseCase.ts";
-import {CardService} from "../../domain/services/CardService.ts";
 import {AnswerCardDTO} from "../../application/dtos/AnswerCardDTO.ts";
 export class CardController {
     constructor(
@@ -57,7 +56,7 @@ export class CardController {
             const cards = await this.getCardsUseCase.execute(queryParams.tag);
 
             res.status(200).json(
-                cards.map(card => CardAdapter.toResponse(card))
+                cards.map(card => CardAdapter.toResponse(card,true))
             );
             return;
         } catch (error: any) {
@@ -78,9 +77,8 @@ export class CardController {
             }
 
             const updatedCard = await this.updateCardUseCase.execute(cardId, req.user.id, dto);
-            res.status(200).json({
-                data: CardAdapter.toResponse(updatedCard)
-            });
+            res.status(200).json(CardAdapter.toResponse(updatedCard)
+            );
             return;
         } catch (error: any) {
             if (error.message === 'Card not found') {
@@ -138,9 +136,9 @@ export class CardController {
                     targetDate
                 );
 
-                res.status(200).json({
-                    data: cards.map(card => CardAdapter.toResponse(card, false))
-                });
+                res.status(200).json(
+                    cards.map(card => CardAdapter.toResponse(card, false))
+                );
                 return;
             } catch (error: any) {
                 if (error.message === 'Daily quiz already taken') {
@@ -165,7 +163,7 @@ export class CardController {
     async answer(req: Request, res: Response) {
         try {
 
-            const { cardId } = req.params;
+            const {cardId} = req.params;
             const answerDTO: AnswerCardDTO = new AnswerCardDTO(
                 req.body.answer,
                 req.body.forceValidation
@@ -173,7 +171,7 @@ export class CardController {
             await validateOrReject(answerDTO);
 
             if (!req.user || req.user.id === undefined) {
-                res.status(401).json({ error: 'Unauthorized' });
+                res.status(401).json({error: 'Unauthorized'});
                 return;
             }
 
@@ -197,14 +195,22 @@ export class CardController {
             return;
         } catch (error: any) {
             if (error.message === 'Card not found') {
-                res.status(404).json({ error: 'Card not found' });
+                res.status(404).json({error: 'Card not found'});
                 return;
             }
             if (error.message === 'Unauthorized access to card') {
-                res.status(403).json({ error: 'Forbidden' });
+                res.status(403).json({error: 'Forbidden'});
                 return;
             }
-            res.status(400).json({ error: error.message || 'Invalid request' });
+            if (error.message === 'Card already reviewed today') {
+                res.status(409).json({error: 'Card already reviewed today'});
+                return;
+            }
+            if (error.message === 'Card is not part of today\'s quiz') {
+                res.status(400).json({error: 'Card is not part of today\'s quiz'});
+                return;
+            }
+            res.status(400).json({error: error.message || 'Invalid request'});
             return;
         }
     }

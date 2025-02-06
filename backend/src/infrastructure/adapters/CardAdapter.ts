@@ -17,10 +17,11 @@ export class CardAdapter {
   static toResponse(card: Card, includeAnswer: boolean = false): CardResponse {
     return {
       id: card.id!,
-      question: card.question,
       category: card.category,
+      question: card.question,
+      ...(includeAnswer ? { answer: card.answer } : {}),
       tag: card.tag,
-      ...(includeAnswer ? { answer: card.answer } : {})
+
     };
   }
 }

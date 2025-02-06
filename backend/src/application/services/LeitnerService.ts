@@ -42,37 +42,48 @@ export class LeitnerService {
         });
     }
 
-    static getNextCategory(currentCategory: Category, isCorrect: boolean): Category {
-        if (!isCorrect) return Category.FIRST;
+    static async updateCardCategory(card: Card, isCorrect: boolean): Promise<Card> {
+        try {
+            console.log('Current category:', card.category);
+            console.log('Is correct:', isCorrect);
 
-        const categories = [
-            Category.FIRST,
-            Category.SECOND,
-            Category.THIRD,
-            Category.FOURTH,
-            Category.FIFTH,
-            Category.SIXTH,
-            Category.SEVENTH,
-            Category.DONE
-        ];
+            const newCategory = this.getNextCategory(card.category, isCorrect);
+            console.log('New category:', newCategory);
 
-        const currentIndex = categories.indexOf(currentCategory);
-        return currentIndex < categories.length - 1
-            ? categories[currentIndex + 1]
-            : Category.DONE;
+            card.category = newCategory;
+            card.lastReviewedAt = new Date();
+
+            return card;
+        } catch (error) {
+            console.error('Error in updateCardCategory:', error);
+            throw error;
+        }
     }
 
-    static async updateCardCategory(
-        card: Card,
-        isCorrect: boolean,
-        forcedValid: boolean = false
-    ): Promise<Card> {
+    private static getNextCategory(currentCategory: Category, isCorrect: boolean): Category {
+        console.log('Getting next category for:', currentCategory, isCorrect);
 
-        const finalIsCorrect = isCorrect || forcedValid;
+        if (!isCorrect) return Category.FIRST;
 
-        card.category = this.getNextCategory(card.category, finalIsCorrect);
-        card.lastReviewedAt = new Date();
-
-        return card;
+        switch (currentCategory) {
+            case Category.FIRST:
+                return Category.SECOND;
+            case Category.SECOND:
+                return Category.THIRD;
+            case Category.THIRD:
+                return Category.FOURTH;
+            case Category.FOURTH:
+                return Category.FIFTH;
+            case Category.FIFTH:
+                return Category.SIXTH;
+            case Category.SIXTH:
+                return Category.SEVENTH;
+            case Category.SEVENTH:
+                return Category.DONE;
+            case Category.DONE:
+                return Category.DONE;
+            default:
+                throw new Error(`Invalid category: ${currentCategory}`);
+        }
     }
 }

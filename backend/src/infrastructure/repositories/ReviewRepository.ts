@@ -21,4 +21,27 @@ export class ReviewRepository implements IReviewRepository {
             savedReview.forcedValid
         );
     }
+
+    async hasReviewedToday(cardId: string, userId: number): Promise<boolean> {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const review = await db.review.findFirst({
+            where: {
+                cardId,
+                Card: {
+                    userId
+                },
+                reviewedAt: {
+                    gte: today,
+                    lt: tomorrow
+                }
+            }
+        });
+
+        return !!review;
+    }
 }
