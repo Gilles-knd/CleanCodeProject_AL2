@@ -9,3 +9,4 @@ dist/
 *.log
 *.js
 .coverage/
+package-lock.json
