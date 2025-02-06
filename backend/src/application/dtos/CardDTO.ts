@@ -24,8 +24,8 @@ export class CardDTO {
 export interface CardResponse {
   id: string;
   question: string;
-  answer: string;
   category: Category;
+  answer?: string;
   tag?: string;
 }
 

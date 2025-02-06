@@ -14,13 +14,13 @@ export class CardAdapter {
     );
   }
 
-  static toResponse(card: Card): CardResponse {
+  static toResponse(card: Card, includeAnswer: boolean = false): CardResponse {
     return {
       id: card.id!,
       question: card.question,
-      answer: card.answer,
       category: card.category,
-      tag: card.tag
+      tag: card.tag,
+      ...(includeAnswer ? { answer: card.answer } : {})
     };
   }
 }
