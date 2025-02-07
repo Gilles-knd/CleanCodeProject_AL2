@@ -1,12 +1,17 @@
 import {ICardRepository} from "../../domain/repositories/ICardRepository.ts";
 import {Card} from "../../domain/entities/Card.ts";
 import {LeitnerService} from "../services/LeitnerService.ts";
-
+import {CheckQuizAvailabilityUseCase} from "./CheckQuizAvailabilityUseCase.ts";
 
 export class GetQuizzCardsUseCase {
-    constructor(private cardRepository: ICardRepository) {}
+    constructor(private cardRepository: ICardRepository,private checkQuizAvailabilityUseCase: CheckQuizAvailabilityUseCase) {}
 
     async execute(userId: number, targetDate?: string): Promise<Card[]> {
+
+        const canTakeQuiz = await this.checkQuizAvailabilityUseCase.execute(userId);
+        if (!canTakeQuiz) {
+            throw new Error('Daily quiz already taken');
+        }
 
         const date = targetDate ? new Date(targetDate) : new Date();
         if (isNaN(date.getTime())) {
@@ -21,13 +26,9 @@ export class GetQuizzCardsUseCase {
             LeitnerService.isCardDueForReview(card, date)
         );
 
+        await this.checkQuizAvailabilityUseCase.updateLastQuizDate(userId);
 
-        const sortedCards = LeitnerService.sortCardsByPriority(dueCards);
 
-
-        return sortedCards.map(card => ({
-            ...card,
-            answer: ''
-        }));
+        return LeitnerService.sortCardsByPriority(dueCards);
     }
 }

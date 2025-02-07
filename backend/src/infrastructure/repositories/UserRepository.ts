@@ -22,4 +22,17 @@ export class UserRepository implements IUserRepository {
         const user = await db.user.findUnique({ where: { id } });
         return user ? new User(user.id, user.email, user.createdAt) : null;
     }
+    async updateLastQuizDate(userId: number, date: Date): Promise<User> {
+        const updatedUser = await db.user.update({
+            where: { id: userId },
+            data: { lastQuizDate: date }
+        });
+
+        return new User(
+            updatedUser.id,
+            updatedUser.email,
+            updatedUser.createdAt,
+            updatedUser.lastQuizDate
+        );
+    }
 }

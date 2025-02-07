@@ -9,7 +9,7 @@ export class Card {
       public readonly question: string,
       public readonly answer: string,
       public readonly tag?: string ,
-      public readonly lastReviewedAt: Date = new Date()
+      public lastReviewedAt: Date = new Date()
 
   ) {}
 }

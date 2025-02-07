@@ -97,7 +97,9 @@ export class CardRepository implements ICardRepository {
       data: {
         question: card.question,
         answer: card.answer,
-        tag: card.tag ?? null
+        tag: card.tag ?? null,
+        category: card.category,
+        lastReviewedAt: new Date()
       }
     });
 
@@ -107,7 +109,8 @@ export class CardRepository implements ICardRepository {
         updatedCard.category as Category,
         updatedCard.question,
         updatedCard.answer,
-        updatedCard.tag!
+        updatedCard.tag ?? undefined,
+        updatedCard.lastReviewedAt
     );
   }
 

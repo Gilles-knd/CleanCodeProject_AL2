@@ -23,6 +23,7 @@ model Card {
   lastReviewedAt DateTime @default(now())
   userId         Int
   user           User     @relation(fields: [userId], references: [id])
+  reviews        Review[]
 }
 
 enum Category {
@@ -37,8 +38,18 @@ enum Category {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  cards     Card[]
-  createdAt DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  cards        Card[]
+  createdAt    DateTime  @default(now())
+  lastQuizDate DateTime?
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  cardId      String
+  reviewedAt  DateTime @default(now())
+  isCorrect   Boolean
+  forcedValid Boolean  @default(false)
+  Card        Card     @relation(fields: [cardId], references: [id])
 }
