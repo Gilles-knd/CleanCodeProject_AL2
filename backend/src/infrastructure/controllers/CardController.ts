@@ -132,7 +132,8 @@ export class CardController {
                     });
                     return;
                 }
-                throw error;
+                res.status(400).json({ error: error.message || 'Invalid request' });
+                return;
             }
         }  catch (error: any) {
             if (error.message === 'Invalid date format') {
