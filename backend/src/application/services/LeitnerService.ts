@@ -1,4 +1,3 @@
-
 import {Card} from "../../domain/entities/Card.ts";
 import {Category} from "../../domain/types/Category.ts";
 import {IReviewRepository} from "../../domain/repositories/IReviewRepository.ts";
@@ -47,15 +46,8 @@ export class LeitnerService {
 
     static async updateCardCategory(card: Card, isCorrect: boolean): Promise<Card> {
         try {
-            console.log('Current category:', card.category);
-            console.log('Is correct:', isCorrect);
-
-            const newCategory = this.getNextCategory(card.category, isCorrect);
-            console.log('New category:', newCategory);
-
-            card.category = newCategory;
+            card.category = this.getNextCategory(card.category, isCorrect);
             card.lastReviewedAt = new Date();
-
             return card;
         } catch (error) {
             console.error('Error in updateCardCategory:', error);

@@ -148,51 +148,27 @@ export class CardController {
     }
     async answer(req: Request, res: Response) {
         try {
-
-            const {cardId} = req.params;
-            const answerDTO: AnswerCardDTO = new AnswerCardDTO(
-                req.body.answer,
+            const { cardId } = req.params;
+            const dto = new AnswerCardDTO(
+                req.body.isValid,
                 req.body.forceValidation
             );
-            await validateOrReject(answerDTO);
+            await validateOrReject(dto);
 
+            await this.answerCardUseCase.execute(cardId, dto);
+            return res.status(204).send();
 
-            const result = await this.answerCardUseCase.execute(
-                cardId,
-                answerDTO
-            );
-
-            const response = {
-                data: CardAdapter.toResponse(result.card, false),
-                isCorrect: result.isCorrect,
-                wasForced: result.wasForced
-            };
-
-            if (!result.isCorrect && !result.wasForced) {
-                response.data.answer = result.card.answer;
-            }
-
-            res.status(200).json(response);
-            return;
         } catch (error: any) {
             if (error.message === 'Card not found') {
-                res.status(404).json({error: 'Card not found'});
-                return;
-            }
-            if (error.message === 'Unauthorized access to card') {
-                res.status(403).json({error: 'Forbidden'});
-                return;
-            }
-            if (error.message === 'Card already reviewed today') {
-                res.status(409).json({error: 'Card already reviewed today'});
-                return;
+                return res.status(404).json({ error: 'Card not found' });
             }
             if (error.message === 'Card is not part of today\'s quiz') {
-                res.status(400).json({error: 'Card is not part of today\'s quiz'});
-                return;
+                return res.status(400).json({ error: 'Card is not part of today\'s quiz' });
             }
-            res.status(400).json({error: error.message || 'Invalid request'});
-            return;
+            if (error.message === 'Card already reviewed today') {
+                return res.status(400).json({ error: 'Card already reviewed today' });
+            }
+            return res.status(400).json({ error: error.message || 'Invalid request' });
         }
     }
 }

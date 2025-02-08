@@ -13,23 +13,16 @@ export class AnswerCardUseCase {
         private reviewRepository: IReviewRepository,
         private getQuizzCardsUseCase: GetQuizzCardsUseCase
     ) {}
-
-    async execute(cardId: string, dto: AnswerCardDTO): Promise<{
-        card: Card,
-        isCorrect: boolean,
-        wasForced: boolean
-    }> {
+    async execute(cardId: string, dto: AnswerCardDTO): Promise<void> {
         const card = await this.cardRepository.findById(cardId);
         if (!card) {
             throw new Error('Card not found');
         }
 
-
         const hasReviewed = await this.reviewRepository.hasReviewedToday(cardId);
         if (hasReviewed) {
             throw new Error('Card already reviewed today');
         }
-
 
         const todayCards = await this.getQuizzCardsUseCase.execute();
         const isCardInQuiz = todayCards.some(c => c.id === cardId);
@@ -37,13 +30,7 @@ export class AnswerCardUseCase {
             throw new Error('Card is not part of today\'s quiz');
         }
 
-
-        const isCorrect = CardService.handleAnswerSubmission(
-            card,
-            dto.answer,
-            dto.forceValidation
-        );
-
+        const isCorrect = dto.forceValidation || dto.isValid;
 
         const review = new Review(
             undefined,
@@ -55,12 +42,6 @@ export class AnswerCardUseCase {
         await this.reviewRepository.save(review);
 
         const updatedCard = await LeitnerService.updateCardCategory(card, isCorrect);
-        const savedCard = await this.cardRepository.update(updatedCard);
-
-        return {
-            card: savedCard,
-            isCorrect,
-            wasForced: dto.forceValidation || false
-        };
+        await this.cardRepository.update(updatedCard);
     }
 }

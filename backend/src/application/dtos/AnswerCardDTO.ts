@@ -1,15 +1,16 @@
 import {IsBoolean, IsNotEmpty, IsOptional, IsString} from "class-validator";
 
 export class AnswerCardDTO {
-    @IsString()
+    @IsBoolean()
     @IsNotEmpty()
-    answer: string;
+    isValid: boolean;
 
     @IsBoolean()
     @IsOptional()
     forceValidation?: boolean;
-    constructor(answer: string, forceValidation?: boolean) {
-        this.answer = answer;
+
+    constructor(isValid: boolean, forceValidation?: boolean) {
+        this.isValid = isValid;
         this.forceValidation = forceValidation;
     }
 }
