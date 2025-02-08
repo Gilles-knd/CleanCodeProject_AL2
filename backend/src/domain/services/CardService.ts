@@ -6,7 +6,6 @@ export class CardService {
         if (forceValidation) {
             return true;
         }
-
         return this.validateAnswer(card, submittedAnswer);
     }
 

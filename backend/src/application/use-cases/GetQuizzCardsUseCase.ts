@@ -1,34 +1,36 @@
+import {IReviewRepository} from "../../domain/repositories/IReviewRepository.ts";
 import {ICardRepository} from "../../domain/repositories/ICardRepository.ts";
 import {Card} from "../../domain/entities/Card.ts";
 import {LeitnerService} from "../services/LeitnerService.ts";
-import {CheckQuizAvailabilityUseCase} from "./CheckQuizAvailabilityUseCase.ts";
 
 export class GetQuizzCardsUseCase {
-    constructor(private cardRepository: ICardRepository,private checkQuizAvailabilityUseCase: CheckQuizAvailabilityUseCase) {}
+    constructor(
+        private cardRepository: ICardRepository,
+        private reviewRepository: IReviewRepository
+    ) {}
 
-    async execute(userId: number, targetDate?: string): Promise<Card[]> {
-
-        const canTakeQuiz = await this.checkQuizAvailabilityUseCase.execute(userId);
-        if (!canTakeQuiz) {
-            throw new Error('Daily quiz already taken');
-        }
-
+    async execute(targetDate?: string): Promise<Card[]> {
         const date = targetDate ? new Date(targetDate) : new Date();
         if (isNaN(date.getTime())) {
             throw new Error('Invalid date format');
         }
 
+        const cards = await this.cardRepository.findAll();
+        const dueCards = await Promise.all(
+            cards.map(async card => {
+                const hasReviewedToday = await this.reviewRepository.hasReviewedToday(card.id!);
+                if (hasReviewedToday) return null;
 
-        const userCards = await this.cardRepository.findByUserId(userId);
-
-
-        const dueCards = userCards.filter(card =>
-            LeitnerService.isCardDueForReview(card, date)
+                const isDue = await LeitnerService.isCardDueForReview(
+                    card,
+                    this.reviewRepository,
+                    date
+                );
+                return isDue ? card : null;
+            })
         );
 
-        await this.checkQuizAvailabilityUseCase.updateLastQuizDate(userId);
-
-
-        return LeitnerService.sortCardsByPriority(dueCards);
+        const filteredCards = dueCards.filter((card): card is Card => card !== null);
+        return LeitnerService.sortCardsByPriority(filteredCards);
     }
 }

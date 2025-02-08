@@ -1,6 +1,7 @@
 
 import {Card} from "../../domain/entities/Card.ts";
 import {Category} from "../../domain/types/Category.ts";
+import {IReviewRepository} from "../../domain/repositories/IReviewRepository.ts";
 
 
 export class LeitnerService {
@@ -15,15 +16,17 @@ export class LeitnerService {
         DONE: Infinity
     };
 
-    static isCardDueForReview(card: Card, targetDate: Date): boolean {
-        const lastReviewDate = new Date(card.lastReviewedAt);
-        const interval = this.INTERVALS[card.category];
+    static async isCardDueForReview(
+        card: Card,
+        reviewRepository: IReviewRepository,
+        targetDate: Date
+    ): Promise<boolean> {
+        const lastReviewDate = await reviewRepository.getLastReviewDate(card.id!);
+        if (!lastReviewDate) return true;
 
-        // Calculer la prochaine date de révision en ajoutant l'intervalle complet en heures
+        const interval = this.INTERVALS[card.category];
         const nextReviewDate = new Date(lastReviewDate);
-        nextReviewDate.setHours(
-            lastReviewDate.getHours() + (interval * 24)
-        );
+        nextReviewDate.setHours(lastReviewDate.getHours() + (interval * 24));
 
         return nextReviewDate <= targetDate;
     }
