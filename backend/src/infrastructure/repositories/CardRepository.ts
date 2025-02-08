@@ -10,12 +10,10 @@ export class CardRepository implements ICardRepository {
         question: card.question,
         answer: card.answer,
         tag: card.tag ?? null,
-        userId: Number(card.userId)
       },
     });
 
     return new Card(
-        savedCard.userId,
         savedCard.id,
         savedCard.category as Category,
         savedCard.question,
@@ -35,12 +33,10 @@ export class CardRepository implements ICardRepository {
         answer: true,
         tag: true,
         category: true,
-        userId: true
       }
     });
 
     return cards.map(card => new Card(
-        card.userId,
         card.id,
         card.category as Category,
         card.question,
@@ -57,38 +53,12 @@ export class CardRepository implements ICardRepository {
     if (!card) return null;
 
     return new Card(
-        card.userId,
         card.id,
         card.category as Category,
         card.question,
         card.answer,
         card.tag ?? undefined
     );
-  }
-
-  async findByUserId(userId: number): Promise<Card[]> {
-    const cards = await db.card.findMany({
-      where: { userId },
-      select: {
-        id: true,
-        question: true,
-        answer: true,
-        tag: true,
-        category: true,
-        userId: true,
-        lastReviewedAt: true
-      }
-    });
-
-    return cards.map(card => new Card(
-        card.userId,
-        card.id,
-        card.category as Category,
-        card.question,
-        card.answer,
-        card.tag ?? undefined,
-        card.lastReviewedAt
-    ));
   }
 
   async update(card: Card): Promise<Card> {
@@ -104,7 +74,6 @@ export class CardRepository implements ICardRepository {
     });
 
     return new Card(
-        updatedCard.userId,
         updatedCard.id,
         updatedCard.category as Category,
         updatedCard.question,
@@ -119,5 +88,18 @@ export class CardRepository implements ICardRepository {
     await db.card.delete({
       where: { id }
     });
+  }
+
+  async findAll(): Promise<Card[]> {
+    const cards = await db.card.findMany();
+
+    return cards.map(card => new Card(
+        card.id,
+        card.category as Category,
+        card.question,
+        card.answer,
+        card.tag ?? undefined,
+        card.lastReviewedAt
+    ));
   }
 }

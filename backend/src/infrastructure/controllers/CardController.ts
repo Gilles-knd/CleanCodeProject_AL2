@@ -1,7 +1,7 @@
 import { Request, Response} from "express";
 import {CreateCardUseCase} from "../../application/use-cases/CreateCardUseCase";
 import {CardDTO} from "../../application/dtos/CardDTO";
-import {validateOrReject} from "class-validator";
+import {validateOrReject, ValidationError} from "class-validator";
 import {GetCardsUseCase} from "../../application/use-cases/GetCardsUseCase.ts";
 import {plainToInstance} from "class-transformer";
 import {GetCardsQueryParamsDTO} from "../../application/dtos/GetCardsQueryParams.ts";
@@ -26,24 +26,26 @@ export class CardController {
             const dto = new CardDTO(req.body.question, req.body.answer, req.body.tag);
             await validateOrReject(dto);
 
-            if (!req.user || req.user.id === undefined) {
-                res.status(401).json({ error: 'Unauthorized' });
-
-
-            }
-
-            const card = await this.createCardUseCase.execute(req.user.id!, dto);
+            const card = await this.createCardUseCase.execute( dto);
             res.status(201).json({
                     id: card.id,
+                    category: card.category,
                     question: card.question,
                     answer: card.answer,
-                    category: card.category,
                     tag: card.tag
                 }
             );
             return;
         } catch (error: any) {
-            res.status(400).json({ error: error.message || 'Invalid request' });
+            if (Array.isArray(error) && error[0] instanceof ValidationError) {
+                const validationErrors = error.map(err => ({
+                    field: err.property,
+                    errors: Object.values(err.constraints || {}) // Liste des erreurs
+                }));
+
+                return res.status(400).json({ errors: validationErrors });
+            }
+            res.status(400).json({ error: error.message || 'Bad request' });
             return;
         }
     }
@@ -71,12 +73,7 @@ export class CardController {
             const dto = new CardDTO(req.body.question, req.body.answer, req.body.tag);
             await validateOrReject(dto);
 
-            if (!req.user || req.user.id === undefined) {
-               res.status(401).json({ error: 'Unauthorized' });
-               return;
-            }
-
-            const updatedCard = await this.updateCardUseCase.execute(cardId, req.user.id, dto);
+            const updatedCard = await this.updateCardUseCase.execute(cardId,dto);
             res.status(200).json(CardAdapter.toResponse(updatedCard)
             );
             return;
@@ -99,11 +96,6 @@ export class CardController {
 
             const { cardId } = req.params;
 
-            if (!req.user || req.user.id === undefined) {
-                res.status(401).json({ error: 'Unauthorized' });
-                return;
-            }
-
             await this.deleteCardUseCase.execute(cardId);
             res.status(204).send();
             return;
@@ -123,18 +115,11 @@ export class CardController {
 
     async getQuizz(req: Request, res: Response) {
         try {
-            if (!req.user || req.user.id === undefined) {
-                res.status(401).json({ error: 'Unauthorized' });
-                return;
-            }
 
             const targetDate = req.query.date as string | undefined;
 
             try {
-                const cards = await this.getQuizzCardsUseCase.execute(
-                    req.user.id,
-                    targetDate
-                );
+                const cards = await this.getQuizzCardsUseCase.execute(targetDate);
 
                 res.status(200).json(
                     cards.map(card => CardAdapter.toResponse(card, false))
@@ -147,7 +132,8 @@ export class CardController {
                     });
                     return;
                 }
-                throw error;
+                res.status(400).json({ error: error.message || 'Invalid request' });
+                return;
             }
         }  catch (error: any) {
             if (error.message === 'Invalid date format') {
@@ -162,56 +148,27 @@ export class CardController {
     }
     async answer(req: Request, res: Response) {
         try {
-
-            const {cardId} = req.params;
-            const answerDTO: AnswerCardDTO = new AnswerCardDTO(
-                req.body.answer,
+            const { cardId } = req.params;
+            const dto = new AnswerCardDTO(
+                req.body.isValid,
                 req.body.forceValidation
             );
-            await validateOrReject(answerDTO);
+            await validateOrReject(dto);
 
-            if (!req.user || req.user.id === undefined) {
-                res.status(401).json({error: 'Unauthorized'});
-                return;
-            }
+            await this.answerCardUseCase.execute(cardId, dto);
+            return res.status(204).send();
 
-            const result = await this.answerCardUseCase.execute(
-                cardId,
-                req.user.id,
-                answerDTO
-            );
-
-            const response = {
-                data: CardAdapter.toResponse(result.card, false),
-                isCorrect: result.isCorrect,
-                wasForced: result.wasForced
-            };
-
-            if (!result.isCorrect && !result.wasForced) {
-                response.data.answer = result.card.answer;
-            }
-
-            res.status(200).json(response);
-            return;
         } catch (error: any) {
             if (error.message === 'Card not found') {
-                res.status(404).json({error: 'Card not found'});
-                return;
-            }
-            if (error.message === 'Unauthorized access to card') {
-                res.status(403).json({error: 'Forbidden'});
-                return;
-            }
-            if (error.message === 'Card already reviewed today') {
-                res.status(409).json({error: 'Card already reviewed today'});
-                return;
+                return res.status(404).json({ error: 'Card not found' });
             }
             if (error.message === 'Card is not part of today\'s quiz') {
-                res.status(400).json({error: 'Card is not part of today\'s quiz'});
-                return;
+                return res.status(400).json({ error: 'Card is not part of today\'s quiz' });
             }
-            res.status(400).json({error: error.message || 'Invalid request'});
-            return;
+            if (error.message === 'Card already reviewed today') {
+                return res.status(400).json({ error: 'Card already reviewed today' });
+            }
+            return res.status(400).json({ error: error.message || 'Invalid request' });
         }
     }
 }

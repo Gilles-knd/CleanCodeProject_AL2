@@ -3,9 +3,8 @@ import {CardDTO, CardResponse} from "../../application/dtos/CardDTO";
 import { Category } from "../../domain/types/Category";
 
 export class CardAdapter {
-  static fromDTOtoDomain(dto: CardDTO, userId: number): Card {
+  static fromDTOtoDomain(dto: CardDTO): Card {
     return new Card(
-        userId,
         undefined,
         Category.FIRST,
         dto.question,

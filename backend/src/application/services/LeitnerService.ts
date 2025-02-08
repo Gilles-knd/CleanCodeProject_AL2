@@ -1,6 +1,6 @@
-
 import {Card} from "../../domain/entities/Card.ts";
 import {Category} from "../../domain/types/Category.ts";
+import {IReviewRepository} from "../../domain/repositories/IReviewRepository.ts";
 
 
 export class LeitnerService {
@@ -15,15 +15,17 @@ export class LeitnerService {
         DONE: Infinity
     };
 
-    static isCardDueForReview(card: Card, targetDate: Date): boolean {
-        const lastReviewDate = new Date(card.lastReviewedAt);
-        const interval = this.INTERVALS[card.category];
+    static async isCardDueForReview(
+        card: Card,
+        reviewRepository: IReviewRepository,
+        targetDate: Date
+    ): Promise<boolean> {
+        const lastReviewDate = await reviewRepository.getLastReviewDate(card.id!);
+        if (!lastReviewDate) return true;
 
-        // Calculer la prochaine date de révision en ajoutant l'intervalle complet en heures
+        const interval = this.INTERVALS[card.category];
         const nextReviewDate = new Date(lastReviewDate);
-        nextReviewDate.setHours(
-            lastReviewDate.getHours() + (interval * 24)
-        );
+        nextReviewDate.setHours(lastReviewDate.getHours() + (interval * 24));
 
         return nextReviewDate <= targetDate;
     }
@@ -44,15 +46,8 @@ export class LeitnerService {
 
     static async updateCardCategory(card: Card, isCorrect: boolean): Promise<Card> {
         try {
-            console.log('Current category:', card.category);
-            console.log('Is correct:', isCorrect);
-
-            const newCategory = this.getNextCategory(card.category, isCorrect);
-            console.log('New category:', newCategory);
-
-            card.category = newCategory;
+            card.category = this.getNextCategory(card.category, isCorrect);
             card.lastReviewedAt = new Date();
-
             return card;
         } catch (error) {
             console.error('Error in updateCardCategory:', error);

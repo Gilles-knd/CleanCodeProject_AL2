@@ -22,19 +22,15 @@ export class ReviewRepository implements IReviewRepository {
         );
     }
 
-    async hasReviewedToday(cardId: string, userId: number): Promise<boolean> {
+    async hasReviewedToday(cardId: string): Promise<boolean> {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
         const review = await db.review.findFirst({
             where: {
                 cardId,
-                Card: {
-                    userId
-                },
                 reviewedAt: {
                     gte: today,
                     lt: tomorrow
@@ -43,5 +39,14 @@ export class ReviewRepository implements IReviewRepository {
         });
 
         return !!review;
+    }
+
+    async getLastReviewDate(cardId: string): Promise<Date | null> {
+        const review = await db.review.findFirst({
+            where: { cardId },
+            orderBy: { reviewedAt: 'desc' }
+        });
+
+        return review ? review.reviewedAt : null;
     }
 }
