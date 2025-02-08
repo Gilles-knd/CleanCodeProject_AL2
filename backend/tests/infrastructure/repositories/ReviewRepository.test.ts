@@ -1,4 +1,4 @@
-import { Card } from "../../../src/domain/entities/Card.ts";
+
 import {ReviewRepository} from "../../../src/infrastructure/repositories/ReviewRepository.ts";
 import { Review } from "../../../src/domain/entities/Review.ts";
 import { Category } from "../../../src/domain/types/Category.ts";

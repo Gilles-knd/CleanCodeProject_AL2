@@ -1,9 +1,7 @@
 import {ICardRepository} from "../../domain/repositories/ICardRepository.ts";
 import {IReviewRepository} from "../../domain/repositories/IReviewRepository.ts";
-import {Card} from "../../domain/entities/Card.ts";
 import {Review} from "../../domain/entities/Review.ts";
 import {LeitnerService} from "../services/LeitnerService.ts";
-import {CardService} from "../../domain/services/CardService.ts";
 import {AnswerCardDTO} from "../dtos/AnswerCardDTO.ts";
 import {GetQuizzCardsUseCase} from "./GetQuizzCardsUseCase.ts";
 
