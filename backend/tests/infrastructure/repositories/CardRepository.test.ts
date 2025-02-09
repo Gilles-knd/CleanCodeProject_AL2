@@ -32,7 +32,7 @@ describe('CardRepository', () => {
 
     describe('findByTags', () => {
         it('should find cards by tag', async () => {
-            // Créer des cartes de test
+
             await db.card.createMany({
                 data: [
                     { tag: 'tag1', question: 'Q1', answer: 'A1', category: Category.FIRST },

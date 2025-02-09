@@ -7,4 +7,5 @@ export interface ICardRepository {
   update(card: Card): Promise<Card>;
   delete(id: string): Promise<void>;
   findAll(): Promise<Card[]>;
+  findSimilar(question: string, answer: string): Promise<Card| null>;
 }

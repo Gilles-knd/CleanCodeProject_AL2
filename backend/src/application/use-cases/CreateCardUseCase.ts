@@ -9,7 +9,10 @@ export class CreateCardUseCase {
   ) {}
 
   async execute( dto: CardDTO): Promise<Card> {
-
+    const existingCard = await this.cardRepository.findSimilar(dto.question, dto.answer);
+    if (existingCard) {
+      throw new Error('a similar card already exists');
+    }
     const card: Card = CardAdapter.fromDTOtoDomain(dto);
     return this.cardRepository.save(card);
   }
