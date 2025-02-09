@@ -11,10 +11,10 @@ export function Switch(props: SwitchPropsI) {
   const { children, className, size = "sm", ...rest } = props;
   const cn = classNames(
     className,
-    "bg-gray-400 data-[state=checked]:bg-primary-600 rounded-full",
+    "bg-gray-400 data-[state=checked]:bg-zinc-900 rounded-full",
     { "w-[2.5rem] h-6": size === "sm" },
     { "w-[3.25rem] h-8": size === "md" },
-    { "bg-gray-400 data-[state=checked]:bg-gray-400": props.disabled },
+    { "bg-gray-400 data-[state=checked]:bg-zinc-300": props.disabled },
   );
   const thumbStyle = classNames(
     "block rounded-full  shadow-switch will-change-transform transition-all translate-x-0.5  bg-white",

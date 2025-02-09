@@ -13,22 +13,45 @@ import { QuizzProgress } from "@/ui/pages/quizz/Progress";
 import { ArrowRight, BicepsFlexed, Eye, Play } from "@icons";
 import React from "react";
 import * as Modal from "@ui/organisms/Modal/Modal";
+import { useFetch } from "@/hooks/useFetch";
+import {
+  answerQuestionRequest,
+  getTodayQuizzRequest,
+} from "@/services/fetch.service";
+import { HttpService } from "@/services/Http.service";
 
 export default function QuizzPage() {
-  const quizz = CARDS;
+  const { isLoading, data, error } = useFetch("quizz", getTodayQuizzRequest);
+  const quizz = data || [];
   const stepCount = quizz.length - 1;
   const [currentStep, setCurrentStep] = React.useState(-1);
   const [currentCard, setCurrentCard] = React.useState(quizz[currentStep]);
   const [answer, setAnswer] = React.useState("");
   const progress = (currentStep / stepCount) * 100;
+  const [isPostAnswerLoading, setIisPostAnswerLoading] = React.useState(false);
   const [buttonLabel, setButtonLabel] = React.useState("Continuer");
   const showSquizz =
     (currentCard && currentStep >= 0 && currentStep <= stepCount) || false;
 
-  const nextStep = () => {
+  const postAnswer = async (answer: string) => {
+    return answerQuestionRequest(currentCard.id, {
+      isValid: answer == currentCard.answer,
+    });
+  };
+
+  const nextStep = async () => {
     if (currentStep < stepCount) {
-      setCurrentStep(currentStep + 1);
-      setCurrentCard(quizz[currentStep + 1]);
+      if (!answer) return;
+      setIisPostAnswerLoading(true);
+      const res = await postAnswer(answer);
+
+      if ("ok" in res && res.ok) {
+        setCurrentStep(currentStep + 1);
+        setCurrentCard(quizz[currentStep + 1]);
+        setAnswer("");
+      }
+
+      setIisPostAnswerLoading(false);
     }
 
     if (currentStep === stepCount - 1) {
@@ -126,7 +149,7 @@ export default function QuizzPage() {
                     currentCard.tag !== "" || currentCard.tag !== undefined
                   }
                 >
-                  <Badge text={currentCard.tag} type="primary" />
+                  <Badge text={currentCard.tag || ""} type="primary" />
                 </VisibilityToggle>
               </Stack>
             </div>
@@ -190,6 +213,7 @@ export default function QuizzPage() {
                         icon={<BicepsFlexed size={16} />}
                         position="right"
                         variant="primary"
+                        disabled={!answer}
                       />
                     </Modal.Action>
                   </Modal.Root>
@@ -209,6 +233,8 @@ export default function QuizzPage() {
                   icon={<ArrowRight size={16} />}
                   position="right"
                   onClick={nextStep}
+                  disabled={!answer}
+                  loading={isPostAnswerLoading}
                 />
               </Stack>
             </Stack>

@@ -11,11 +11,11 @@ import Logo from "@/ui/atoms/Logo/Logo";
 import React, { FormEvent } from "react";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [buttonLabel, setButtonLabel] = React.useState("Je me connecte");
+  const [buttonLabel, setButtonLabel] = React.useState("Je créer mon compte");
 
-  const login = (e: FormEvent) => {
+  const register = (e: FormEvent) => {
     e.preventDefault();
     setButtonLabel("Veuillez pattientez");
     setIsLoading(true);
@@ -24,6 +24,7 @@ export default function LoginPage() {
     //Register user
     setIsLoading(false);
   };
+
   return (
     <Stack
       direction="row"
@@ -31,7 +32,10 @@ export default function LoginPage() {
       align="center"
       justify="center"
     >
-      <form className="flex flex-col space-y-4 items-center">
+      <form
+        className="flex flex-col space-y-4 items-center"
+        onSubmit={register}
+      >
         <Logo />
         <Stack
           className="w-full h-auto bg-white max-w-80 p-6 rounded-2xl
@@ -40,10 +44,10 @@ export default function LoginPage() {
         >
           <Stack direction="col" gapy={8}>
             <Heading level={4} className=" text-lg font-semibold">
-              Se connecter
+              Créer mon compte
             </Heading>
             <Text className="!text-zinc-500 !text-xm">
-              Entrer votre addresse email pour acceder à votre espace
+              Créer votre compte pour gérer facilement vos fiches de révisions
             </Text>
           </Stack>
 
@@ -51,24 +55,26 @@ export default function LoginPage() {
             type="email"
             label="Email"
             name="email"
+            required
             invalid={true}
-            errorMessage="Cet email n'est pas enregistré"
+            errorMessage="Cet email est déjà enregistré"
             placeholder="toto@gmail.com"
           />
 
-          <Stack direction="col" gapy={4} align="center" justify="center">
+          <Stack direction="col" gapy={4} align="center">
             <Button
-              type="button"
+              type="submit"
               label={buttonLabel}
               className="w-full"
               disabled={isLoading}
               loading={isLoading}
             />
+
             <Link
-              href={"/auth/register"}
+              href={"/auth/login"}
               className="text-xs text-zinc-600 hover:underline"
             >
-              Je n'ai pas de compte
+              J'ai déjà un compte
             </Link>
           </Stack>
         </Stack>

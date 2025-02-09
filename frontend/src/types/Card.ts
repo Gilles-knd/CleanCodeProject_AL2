@@ -8,4 +8,4 @@ export interface ICard {
   tag?: string;
 }
 
-export type NewCard = Omit<ICard, "id">;
+export type NewCard = Omit<ICard, "id" | "category">;

@@ -1,11 +1,10 @@
 import React from "react";
 import classNames from "classnames";
-import { genUniqueNumber } from "@helpers";
 
 interface CheckboxProps extends React.ComponentProps<"input"> {}
 
 export function Checkbox(props: CheckboxProps) {
-  const { children, disabled = false, id = genUniqueNumber(4), className, ...rest } = props;
+  const { children, disabled = false, id , className, ...rest } = props;
 
   const cn = classNames(
     "h-[1.5rem] w-[1.5rem] border-solid border-[1px] border-gray-200 rounded-[.5rem]",

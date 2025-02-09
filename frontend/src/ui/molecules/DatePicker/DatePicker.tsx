@@ -5,6 +5,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./style.css";
 import { Label } from "@ui/atoms/Label/Label";
 import DateComponent, { DatePickerProps } from "react-datepicker";
+import { fr } from "date-fns/locale";
+import { formatHour } from "@helpers";
 
 type DatePickerExtendedProps = {
   errorMessage?: string;
@@ -40,16 +42,16 @@ export const DatePicker = React.forwardRef((props: DatePickerExtendedProps, forw
 
   const Trigger = React.forwardRef((props: React.ComponentProps<"button">, ref: any) => {
     const { value, className, ...rest } = props;
-    const disabled = readOnly ? true : false
+    const disabled = readOnly ? true : false;
 
     return (
       <button disabled={disabled}  ref={ref} className={classNames(className, {
-        "opacity-50 cursor-pointer": disabled
+        "opacity-50 cursor-pointer": disabled,
       })} {...rest}>
         {label && <Label text={label} htmlFor={props.id} />}
         <div
           className={classNames(
-            "flex flex-row rounded-[.75rem] border-solid border-gray-300 border-[1px]  overflow-hidden h-12 w-full",
+            "flex flex-row rounded-[.75rem] border-solid border-gray-300 border overflow-hidden w-full",
             { "focus-within:shadow-input-focused": !invalid },
             {
               "invalid:shadow-input-invalid group-focus:invalid:shadow-input-invalid shadow-input-invalid": invalid,
@@ -63,7 +65,7 @@ export const DatePicker = React.forwardRef((props: DatePickerExtendedProps, forw
           )}
 
           <span className={cn}>
-            <p className={"!text-xs text-gray-600 capitalize"}>{value || placeholder}</p>
+            <p className={"!text-xs text-gray-800 font-medium"}>Tous les jours à {value|| placeholder}</p>
           </span>
 
           <input type={"hidden"} id={props.id} />

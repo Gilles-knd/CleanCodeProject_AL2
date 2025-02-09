@@ -7,21 +7,43 @@ import { Stack } from "@/ui/layouts/Stack/Stack";
 import React from "react";
 
 interface CardFormData {
-  data?: NewCard;
+  data?: ICard;
+  handleFormRef: CallableFunction;
+  handleSubmit: CallableFunction;
 }
 
 export default function CardForm(props: CardFormData) {
-  const { data } = props;
+  const { data, handleFormRef, handleSubmit } = props;
+  const formRef = React.useRef(null);
   const [card, setCard] = React.useState<NewCard>({
     question: data?.question ?? "",
     answer: data?.answer ?? "",
-    category: data?.category ?? Category.FIRST,
     tag: data?.tag ?? "",
   });
 
+  const onSubmit = (formData: FormData) => {
+    if (!formRef.current) return;
+
+    const card = {
+      question: formData.get("question") || "",
+      answer: formData.get("answer") || "",
+      tag: formData.get("tag") || "",
+    };
+
+    if (data) {
+      card.id = data.id;
+    }
+    handleSubmit(card);
+  };
+
+  React.useEffect(() => {
+    if (formRef.current) {
+      handleFormRef(formRef.current);
+    }
+  }, [formRef]);
 
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" ref={formRef} action={onSubmit}>
       <Stack direction="col" gapy={8}>
         <Label text={"Question"} htmlFor="question-field" />
         <TextBox
@@ -32,6 +54,7 @@ export default function CardForm(props: CardFormData) {
           onChange={(e) => setCard({ ...card, question: e.target.value })}
           className="bg-zinc-100 font-medium"
           rows={2}
+          required
         />
       </Stack>
 
@@ -44,16 +67,19 @@ export default function CardForm(props: CardFormData) {
           value={card.answer}
           onChange={(e) => setCard({ ...card, answer: e.target.value })}
           className="bg-zinc-100 font-medium"
+          required
         />
       </Stack>
-      
+
       {data && data.tag && (
         <Stack direction="col" gapy={8}>
           <Label text={"Tag"} />
           <TextField
             type="text"
+            name="tag"
             placeholder="Example: TeamWork"
             className="bg-zinc-100 font-medium"
+            onChange={(e) => setCard({ ...card, tag: e.target.value })}
             value={card.tag}
           />
         </Stack>
@@ -64,9 +90,11 @@ export default function CardForm(props: CardFormData) {
           <Label text={"Tag (Facultatif)"} />
           <TextField
             type="text"
+            name="tag"
             placeholder="Example: TeamWork"
             disabled={data ? true : false}
             className="bg-zinc-100 font-medium"
+            onChange={(e) => setCard({ ...card, tag: e.target.value })}
             value={card.tag}
           />
         </Stack>

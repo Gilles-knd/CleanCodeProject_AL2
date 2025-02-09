@@ -15,7 +15,7 @@ export const CARDS = [
     answer:
       "I facilitate one-on-one discussions and mediate group meetings to ensure all perspectives are heard and conflicts are addressed promptly.",
     category: Category.SECOND,
-    tag: "Teamwork",
+    tag: "Languages",
   },
   {
     id: "2",
@@ -23,7 +23,7 @@ export const CARDS = [
     answer:
       "I recognize individual contributions, encourage open feedback, and create opportunities for professional growth.",
     category: Category.THIRD,
-    tag: "Teamwork",
+    tag: "World",
   },
   {
     id: "3",

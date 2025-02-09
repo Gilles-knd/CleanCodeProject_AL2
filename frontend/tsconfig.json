@@ -24,7 +24,7 @@
       "@icons": ["./src/ui/atoms/Icon/Icon"],
       "@context/*": ["./src/ui/context/*"],
       "@hooks/*": ["./src/ui/hooks/*"],
-      "@helpers": ["./helpers"],
+      "@helpers": ["./src/utils/helpers"],
       "@dictionaries": ["./dictionaries/dictionaries"]
     }
   },
