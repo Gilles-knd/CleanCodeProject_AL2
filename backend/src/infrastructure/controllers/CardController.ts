@@ -43,7 +43,8 @@ export class CardController {
                     errors: Object.values(err.constraints || {}) // Liste des erreurs
                 }));
 
-                return res.status(400).json({ errors: validationErrors });
+                res.status(400).json({ errors: validationErrors });
+                return;
             }
             res.status(400).json({ error: error.message || 'Bad request' });
             return;
@@ -122,7 +123,7 @@ export class CardController {
                 const cards = await this.getQuizzCardsUseCase.execute(targetDate);
 
                 res.status(200).json(
-                    cards.map(card => CardAdapter.toResponse(card, false))
+                    cards.map(card => CardAdapter.toResponse(card,true))
                 );
                 return;
             } catch (error: any) {
@@ -156,19 +157,24 @@ export class CardController {
             await validateOrReject(dto);
 
             await this.answerCardUseCase.execute(cardId, dto);
-            return res.status(204).send();
+            res.status(204).send();
+            return;
 
         } catch (error: any) {
             if (error.message === 'Card not found') {
-                return res.status(404).json({ error: 'Card not found' });
+                res.status(404).json({ error: 'Card not found' });
+                return;
             }
             if (error.message === 'Card is not part of today\'s quiz') {
-                return res.status(400).json({ error: 'Card is not part of today\'s quiz' });
+                res.status(400).json({ error: 'Card is not part of today\'s quiz' });
+                return;
             }
             if (error.message === 'Card already reviewed today') {
-                return res.status(400).json({ error: 'Card already reviewed today' });
+                res.status(400).json({ error: 'Card already reviewed today' });
+                return;
             }
-            return res.status(400).json({ error: error.message || 'Invalid request' });
+            res.status(400).json({ error: error.message || 'Invalid request' });
+            return;
         }
     }
 }

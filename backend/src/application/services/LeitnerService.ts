@@ -32,14 +32,14 @@ export class LeitnerService {
 
     static sortCardsByPriority(cards: Card[]): Card[] {
         return [...cards].sort((a, b) => {
-            // D'abord trier par catégorie (priorité aux catégories inférieures)
+
             const categoryComparison =
                 Object.keys(this.INTERVALS).indexOf(a.category) -
                 Object.keys(this.INTERVALS).indexOf(b.category);
 
             if (categoryComparison !== 0) return categoryComparison;
 
-            // Ensuite par date de dernière révision (priorité aux plus anciennes)
+
             return new Date(a.lastReviewedAt).getTime() - new Date(b.lastReviewedAt).getTime();
         });
     }

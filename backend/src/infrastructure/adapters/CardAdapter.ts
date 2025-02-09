@@ -20,7 +20,6 @@ export class CardAdapter {
       question: card.question,
       ...(includeAnswer ? { answer: card.answer } : {}),
       tag: card.tag,
-
     };
   }
 }
