@@ -1,7 +1,7 @@
 import { ICardRepository } from "../../domain/repositories/ICardRepository";
 import db from "../db/prisma";
 import { Card } from "../../domain/entities/Card.ts";
-import {Category} from "../../domain/types/Category.ts";
+import { Category } from "../../domain/types/Category.ts";
 
 export class CardRepository implements ICardRepository {
   async save(card: Card): Promise<Card> {
@@ -14,11 +14,11 @@ export class CardRepository implements ICardRepository {
     });
 
     return new Card(
-        savedCard.id,
-        savedCard.category as Category,
-        savedCard.question,
-        savedCard.answer,
-        savedCard.tag!
+      savedCard.id,
+      savedCard.category as Category,
+      savedCard.question,
+      savedCard.answer,
+      savedCard.tag!,
     );
   }
 
@@ -33,31 +33,34 @@ export class CardRepository implements ICardRepository {
         answer: true,
         tag: true,
         category: true,
-      }
+      },
     });
 
-    return cards.map(card => new Card(
-        card.id,
-        card.category as Category,
-        card.question,
-        card.answer,
-        card.tag ?? undefined
-    ));
+    return cards.map(
+      (card) =>
+        new Card(
+          card.id,
+          card.category as Category,
+          card.question,
+          card.answer,
+          card.tag ?? undefined,
+        ),
+    );
   }
 
   async findById(id: string): Promise<Card | null> {
     const card = await db.card.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!card) return null;
 
     return new Card(
-        card.id,
-        card.category as Category,
-        card.question,
-        card.answer,
-        card.tag ?? undefined
+      card.id,
+      card.category as Category,
+      card.question,
+      card.answer,
+      card.tag ?? undefined,
     );
   }
 
@@ -69,38 +72,40 @@ export class CardRepository implements ICardRepository {
         answer: card.answer,
         tag: card.tag ?? null,
         category: card.category,
-        lastReviewedAt: new Date()
-      }
+        lastReviewedAt: new Date(),
+      },
     });
 
     return new Card(
-        updatedCard.id,
-        updatedCard.category as Category,
-        updatedCard.question,
-        updatedCard.answer,
-        updatedCard.tag ?? undefined,
-        updatedCard.lastReviewedAt
+      updatedCard.id,
+      updatedCard.category as Category,
+      updatedCard.question,
+      updatedCard.answer,
+      updatedCard.tag ?? undefined,
+      updatedCard.lastReviewedAt,
     );
   }
 
   async delete(id: string): Promise<void> {
-
     await db.card.delete({
-      where: { id }
+      where: { id },
     });
   }
 
   async findAll(): Promise<Card[]> {
     const cards = await db.card.findMany();
 
-    return cards.map(card => new Card(
-        card.id,
-        card.category as Category,
-        card.question,
-        card.answer,
-        card.tag ?? undefined,
-        card.lastReviewedAt
-    ));
+    return cards.map(
+      (card) =>
+        new Card(
+          card.id,
+          card.category as Category,
+          card.question,
+          card.answer,
+          card.tag ?? undefined,
+          card.lastReviewedAt,
+        ),
+    );
   }
 
   async findSimilar(question: string, answer: string): Promise<Card | null> {
@@ -109,26 +114,26 @@ export class CardRepository implements ICardRepository {
 
     const cards = await db.card.findFirst({
       where: {
-       question: {
-         equals: normalizedQuestion,
-         mode: 'insensitive'
-         },
-       answer: {
-         equals: normalizedAnswer,
-         mode: 'insensitive'
-       }
-      }
-      });
+        question: {
+          equals: normalizedQuestion,
+          mode: "insensitive",
+        },
+        answer: {
+          equals: normalizedAnswer,
+          mode: "insensitive",
+        },
+      },
+    });
 
-    if(!cards) return null;
+    if (!cards) return null;
 
     return new Card(
-        cards.id,
-        cards.category as Category,
-        cards.question,
-        cards.answer,
-        cards.tag ?? undefined,
-        cards.lastReviewedAt
+      cards.id,
+      cards.category as Category,
+      cards.question,
+      cards.answer,
+      cards.tag ?? undefined,
+      cards.lastReviewedAt,
     );
   }
 }
