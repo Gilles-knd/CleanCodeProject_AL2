@@ -102,4 +102,33 @@ export class CardRepository implements ICardRepository {
         card.lastReviewedAt
     ));
   }
+
+  async findSimilar(question: string, answer: string): Promise<Card | null> {
+    const normalizedQuestion = question.trim().toLowerCase();
+    const normalizedAnswer = answer.trim().toLowerCase();
+
+    const cards = await db.card.findFirst({
+      where: {
+       question: {
+         equals: normalizedQuestion,
+         mode: 'insensitive'
+         },
+       answer: {
+         equals: normalizedAnswer,
+         mode: 'insensitive'
+       }
+      }
+      });
+
+    if(!cards) return null;
+
+    return new Card(
+        cards.id,
+        cards.category as Category,
+        cards.question,
+        cards.answer,
+        cards.tag ?? undefined,
+        cards.lastReviewedAt
+    );
+  }
 }

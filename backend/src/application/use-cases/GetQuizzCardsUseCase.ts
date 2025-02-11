@@ -16,21 +16,23 @@ export class GetQuizzCardsUseCase {
         }
 
         const cards = await this.cardRepository.findAll();
-        const dueCards = await Promise.all(
-            cards.map(async card => {
-                const hasReviewedToday = await this.reviewRepository.hasReviewedToday(card.id!);
-                if (hasReviewedToday) return null;
+        const filteredCards: Card[] = [];
 
-                const isDue = await LeitnerService.isCardDueForReview(
-                    card,
-                    this.reviewRepository,
-                    date
-                );
-                return isDue ? card : null;
-            })
-        );
+        for (const card of cards) {
 
-        const filteredCards = dueCards.filter((card): card is Card => card !== null);
+            const hasReviewedToday = await this.reviewRepository.hasReviewedToday(card.id!);
+            if (hasReviewedToday) continue;
+
+            const isDue = await LeitnerService.isCardDueForReview(
+                card,
+                this.reviewRepository,
+                date
+            );
+            if (isDue) {
+                filteredCards.push(card);
+            }
+        }
+
         return LeitnerService.sortCardsByPriority(filteredCards);
     }
 }

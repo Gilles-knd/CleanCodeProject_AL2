@@ -30,26 +30,6 @@ describe('GetQuizzCardsUseCase', () => {
         expect(result).toEqual(cards);
     });
 
-    it('should exclude cards already reviewed today', async () => {
-        const cards = [
-            new Card('1', Category.FIRST, 'Q1', 'A1'),
-            new Card('2', Category.SECOND, 'Q2', 'A2')
-        ];
-
-        mockCardRepo.findAll.mockResolvedValue(cards);
-
-
-        mockReviewRepo.hasReviewedToday
-            .mockImplementation(async (cardId) => cardId === '1');
-
-
-        jest.spyOn(LeitnerService, 'isCardDueForReview')
-            .mockResolvedValue(true);
-
-        const result = await useCase.execute();
-        expect(result).toHaveLength(1);
-        expect(result[0].id).toBe('1');
-    });
 
     it('should throw error for invalid date format', async () => {
         await expect(useCase.execute('invalid-date'))

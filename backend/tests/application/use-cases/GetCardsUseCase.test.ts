@@ -14,8 +14,8 @@ describe('GetCardsUseCase', () => {
 
     it('should get all cards when no tags provided', async () => {
         const expectedCards = [
-            new Card('1', Category.FIRST, 'Q1', 'A1'),
-            new Card('2', Category.SECOND, 'Q2', 'A2')
+            new Card("1", Category.FIRST, "Q1", "A1", "tag1"),
+            new Card("2", Category.SECOND, "Q2", "A2", "tag2"),
         ];
         mockRepo.findByTags.mockResolvedValue(expectedCards);
 
@@ -34,5 +34,12 @@ describe('GetCardsUseCase', () => {
         const result = await useCase.execute(tags);
         expect(result).toEqual(expectedCards);
         expect(mockRepo.findByTags).toHaveBeenCalledWith(tags);
+    });
+
+    it('should return an empty array ifno matching cards', async() => {
+        mockRepo.findByTags.mockResolvedValue([]);
+        const result = await useCase.execute(['tagX']);
+        expect(result).toEqual([]);
+        expect(mockRepo.findByTags).toHaveBeenCalledWith(['tagX']);
     });
 });
