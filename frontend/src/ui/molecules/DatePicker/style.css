@@ -1,0 +1,94 @@
+/*Source: https://stackoverflow.com/questions/55794770/how-can-i-style-react-datepicker*/
+
+.react-datepicker__triangle {
+  display: none;
+}
+
+.react-datepicker__tab-loop {
+  margin: 0 !important;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__day.react-datepicker__day--keyboard-selected {
+  border: none;
+  border-radius: 8px;
+  background-color: theme("colors.primary.600");
+  color: theme("colors.white");
+}
+
+.react-datepicker__day.react-datepicker__day--keyboard-selected:hover {
+  border: none;
+  border-radius: 8px;
+  background-color: theme("colors.primary.600");
+  color: theme("colors.white");
+}
+
+.react-datepicker-popper .react-datepicker__navigation {
+  padding-top: 12px;
+  color: #000;
+}
+
+.react-datepicker {
+  box-shadow: theme("boxShadow.dropdown");
+  border-radius: theme("borderRadius.xl");
+  border: 1px solid theme("colors.gray.100");
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  border-bottom: solid 2px theme("colors.gray.100") !important;
+  background: white !important;
+}
+
+.react-datepicker__current-month {
+  color: theme("colors.primary.700") !important;
+}
+
+.react-datepicker__day.react-datepicker__day--today {
+  border-radius: 8px;
+  border: solid 2px theme("colors.primary.500") !important;
+  background-color: white !important;
+  color: theme("colors.primary.900") !important;
+  width: 30px;
+  height: 30px;
+}
+
+.react-datepicker__day.react-datepicker__day--today:hover {
+  border-radius: 8px;
+}
+
+.react-datepicker__day.react-datepicker__day--selected {
+  border: none;
+  border-radius: 8px;
+  background-color: theme("colors.primary.600");
+  color: white;
+}
+
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li.react-datepicker__time-list-item--selected {
+  background-color: theme("colors.zinc.900");
+  color: white;
+}
+
+.react-datepicker__day--selected:hover,
+.react-datepicker__day--in-selecting-range:hover,
+.react-datepicker__day--in-range:hover,
+.react-datepicker__month-text--selected:hover,
+.react-datepicker__month-text--in-selecting-range:hover,
+.react-datepicker__month-text--in-range:hover,
+.react-datepicker__quarter-text--selected:hover,
+.react-datepicker__quarter-text--in-selecting-range:hover,
+.react-datepicker__quarter-text--in-range:hover,
+.react-datepicker__year-text--selected:hover,
+.react-datepicker__year-text--in-selecting-range:hover,
+.react-datepicker__year-text--in-range:hover {
+  border: none;
+  border-radius: 8px !important;
+  background-color: theme("colors.primary.700") !important;
+}
