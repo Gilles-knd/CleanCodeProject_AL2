@@ -11,6 +11,7 @@ import { VisibilityToggle } from "@/ui/molecules/VisibilityToggle/VisibilityTogg
 type FilterKey = {
   label: string;
   key: string;
+  values?: string[];
 };
 
 interface FilterProps<T> {
@@ -36,43 +37,63 @@ export function Filter<T extends Record<string, any>>(props: FilterProps<T>) {
     let filteringKeysMaps = new Map<string, string[]>();
 
     keys.forEach((k) => {
-      filteringKeysMaps.set(k.key, []);
+      if (k.values) {
+        // Utiliser les valeurs fixes si disponibles
+        filteringKeysMaps.set(k.key, k.values);
+      } else {
+        filteringKeysMaps.set(k.key, []);
+      }
     });
 
     data.forEach((d: T) => {
       keys.forEach((k: FilterKey) => {
-        if (!filteringKeysMaps.get(k.key)?.includes(d[k.key])) {
-          filteringKeysMaps.get(k.key)?.push(d[k.key]);
+        if (!k.values) {
+          const value = d[k.key];
+          if (value !== undefined && value !== null) {
+            const values = filteringKeysMaps.get(k.key);
+            if (values && !values.includes(value)) {
+              values.push(value);
+            }
+          }
         }
       });
     });
 
-    return [...filteringKeysMaps];
+    return Array.from(filteringKeysMaps.entries());
   }
+
   const filteringKeys = getKeys(data, filters);
 
   const filter = (key: string, value: string) => {
     setSelectedKeys((prev) => ({
       ...prev,
-      [key]: value, // Remplace la valeur de cette clé
+      [key]: value,
     }));
   };
 
   useEffect(() => {
+    if (Object.keys(selectedKeys).length === 0) {
+      onFilter(data);
+      return;
+    }
+  
     const filteredData = data.filter((item) =>
-      Object.entries(selectedKeys).every(
-        ([key, value]) => item[key] === value // Vérifie si chaque clé du filtre correspond
-      )
+      Object.entries(selectedKeys).every(([key, value]) => item[key] === value)
     );
-
+  
     onFilter(filteredData);
-  }, [selectedKeys, data, props.onFilter]);
+  }, [selectedKeys, data]);
+  
+  
 
   return (
     <Stack className={cn} direction="col" gapy={8}>
       <h3>{title}</h3>
       <Stack direction={"row"} gapx={8} align="center" className="flex-none">
         {filteringKeys.map(([key, values]) => {
+          const isDisabled = values.length === 0;
+          console.log(values);
+
           return (
             <Select.Root key={key} onValueChange={(v) => filter(key, v)}>
               <Select.Trigger
@@ -85,23 +106,25 @@ export function Filter<T extends Record<string, any>>(props: FilterProps<T>) {
                 </Select.Icon>
               </Select.Trigger>
 
-              <Select.Portal>
-                <SelectContent className="w-full bg-white border border-solid border-gray-200 rounded-2xl p-1">
-                  <Select.Viewport className="p-0">
-                    {values.map((v) => {
-                      return (
-                        <Select.Item
-                          key={v}
-                          value={v}
-                          className="py-2 px-4 rounded-xl cursor-pointer outline-none user-select-none text-sm hover:bg-zinc-100"
-                        >
-                          <Select.ItemText>{v}</Select.ItemText>
-                        </Select.Item>
-                      );
-                    })}
-                  </Select.Viewport>
-                </SelectContent>
-              </Select.Portal>
+              {!isDisabled && (
+                <Select.Portal>
+                  <SelectContent className="w-full bg-white border border-solid border-gray-200 rounded-2xl p-1">
+                    <Select.Viewport className="p-0">
+                      {values.map((v) => {
+                        return (
+                          <Select.Item
+                            key={v}
+                            value={v || " "}
+                            className="py-2 px-4 rounded-xl cursor-pointer outline-none user-select-none text-sm hover:bg-zinc-100"
+                          >
+                            <Select.ItemText>{v}</Select.ItemText>
+                          </Select.Item>
+                        );
+                      })}
+                    </Select.Viewport>
+                  </SelectContent>
+                </Select.Portal>
+              )}
             </Select.Root>
           );
         })}
@@ -112,7 +135,10 @@ export function Filter<T extends Record<string, any>>(props: FilterProps<T>) {
             size={"sm"}
             rounded
             icon={<X size={16} />}
-            onClick={() => setSelectedKeys({})}
+            onClick={() => {
+              setSelectedKeys({});
+              onFilter(data);
+            }}
           />
         </VisibilityToggle>
       </Stack>

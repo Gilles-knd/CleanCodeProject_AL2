@@ -1,6 +1,5 @@
 "use client";
 
-import { CARDS } from "@/constants/cards";
 import { Badge } from "@/ui/atoms/Badge/Badge";
 import { Button } from "@/ui/atoms/Button/Button";
 import { Heading } from "@/ui/atoms/Heading/Heading";
@@ -18,7 +17,7 @@ import {
   answerQuestionRequest,
   getTodayQuizzRequest,
 } from "@/services/fetch.service";
-import { HttpService } from "@/services/Http.service";
+import Link from "next/link";
 
 export default function QuizzPage() {
   const { isLoading, data, error } = useFetch("quizz", getTodayQuizzRequest);
@@ -33,32 +32,39 @@ export default function QuizzPage() {
   const showSquizz =
     (currentCard && currentStep >= 0 && currentStep <= stepCount) || false;
 
-  const postAnswer = async (answer: string) => {
-    return answerQuestionRequest(currentCard.id, {
-      isValid: answer == currentCard.answer,
+  const postAnswer = async (forceValidation?: boolean) => {
+    setIisPostAnswerLoading(true);
+
+    const isValid = forceValidation ?? answer == currentCard.answer;
+
+    const res = await answerQuestionRequest(currentCard.id, {
+      isValid: isValid,
     });
+
+    if ("ok" in res && res.ok) {
+      setCurrentStep(currentStep + 1);
+      setCurrentCard(quizz[currentStep + 1]);
+      setAnswer("");
+    }
+
+    setIisPostAnswerLoading(false);
   };
 
-  const nextStep = async () => {
+  const nextStep = async (forceValidation?: boolean) => {
     if (currentStep < stepCount) {
+      console.log("<");
       if (!answer) return;
-      setIisPostAnswerLoading(true);
-      const res = await postAnswer(answer);
-
-      if ("ok" in res && res.ok) {
-        setCurrentStep(currentStep + 1);
-        setCurrentCard(quizz[currentStep + 1]);
-        setAnswer("");
-      }
-
-      setIisPostAnswerLoading(false);
+      await postAnswer(forceValidation);
     }
 
     if (currentStep === stepCount - 1) {
+      console.log("fic");
       setButtonLabel("Terminer");
+      await postAnswer(forceValidation);
     }
 
     if (currentStep === stepCount) {
+      await postAnswer(forceValidation);
       setCurrentStep(currentStep + 1);
       closeQuizz();
     }
@@ -69,11 +75,6 @@ export default function QuizzPage() {
     setCurrentCard(quizz[0]);
   };
 
-  const submitAnswer = (answer: string) => {
-    // Submit answer to backend
-    nextStep();
-  };
-
   const closeQuizz = () => {};
 
   return (
@@ -82,7 +83,7 @@ export default function QuizzPage() {
         <VisibilityToggle visible={showSquizz}>
           <QuizzProgress
             progress={progress}
-            text={`${currentStep}/${stepCount}`}
+            text={`${currentStep + 1}/${stepCount + 1}`}
           />
         </VisibilityToggle>
       </AppHeader>
@@ -94,11 +95,6 @@ export default function QuizzPage() {
             <Heading level={3} className="font-medium">
               Démarrer un quizz
             </Heading>
-            <Text className="text-center max-w-96">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui a
-              ipsum nemo perferendis, atque omnis? Ratione incidunt at aliquam
-              veritatis illum debitis?
-            </Text>
             <Button
               label={"Démarrer"}
               icon={<Play size={16} />}
@@ -114,12 +110,14 @@ export default function QuizzPage() {
         <div className="p-10 flex justify-center">
           <div className="flex flex-col items-center space-y-4">
             <Heading level={3} className="font-medium">
-              Vous avez terminer le quizz
+              Vous n'avez pas de questions en cours
             </Heading>
             <Text className="text-center max-w-96">
               Revenez demain pour un nouveau quizz
             </Text>
-            <Button label={"Voir les fiches"} />
+            <Link href={"/dashboard/cards"}>
+              <Button label={"Voir les fiches"} />
+            </Link>
           </div>
         </div>
       </VisibilityToggle>
@@ -214,6 +212,7 @@ export default function QuizzPage() {
                         position="right"
                         variant="primary"
                         disabled={!answer}
+                        onClick={() => nextStep(true)}
                       />
                     </Modal.Action>
                   </Modal.Root>
@@ -232,7 +231,7 @@ export default function QuizzPage() {
                   label={buttonLabel}
                   icon={<ArrowRight size={16} />}
                   position="right"
-                  onClick={nextStep}
+                  onClick={async () => await nextStep()}
                   disabled={!answer}
                   loading={isPostAnswerLoading}
                 />

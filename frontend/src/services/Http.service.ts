@@ -19,7 +19,6 @@ export class HttpService {
         method,
         headers: {
           "Content-Type": "application/json",
-          "x-user-email": "rogerbentcha@gmail.com"
         },
         body: body ? JSON.stringify(body) : undefined,
       });

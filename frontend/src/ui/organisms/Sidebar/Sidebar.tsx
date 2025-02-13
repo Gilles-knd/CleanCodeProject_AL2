@@ -122,7 +122,7 @@ const SidebarFooter = (props: SidebarFooterProps) => {
   return (
     <div className={cn} {...rest}>
       <Stack direction={"col"} gapy={14}>
-        <Link href={""} className={"text-gray-700"}>
+        {/* <Link href={""} className={"text-gray-700"}>
           <Button
             position={"left"}
             label={"Logout"}
@@ -131,7 +131,7 @@ const SidebarFooter = (props: SidebarFooterProps) => {
             onClick={() => {}}
             className={"!justify-start w-full"}
           />
-        </Link>
+        </Link> */}
       </Stack>
     </div>
   );

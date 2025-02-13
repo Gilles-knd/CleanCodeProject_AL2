@@ -4,25 +4,34 @@ import { Button } from "@/ui/atoms/Button/Button";
 import EmptyStateBox from "@/ui/molecules/EmptyStateBox/EmptyStateBox";
 import { AppHeader } from "@/ui/organisms/AppHeader/AppHeader";
 import Card from "@/ui/organisms/Card/Card";
-import React, { RefObject, useContext } from "react";
+import React, { RefObject, useCallback, useContext } from "react";
 import { Stack } from "@/ui/layouts/Stack/Stack";
 import { useCardContext } from "@/hooks/useCardContext";
 import { Plus } from "@icons";
 import { NewCard, ICard } from "@/types/Card";
 import * as Drawer from "@/ui/organisms/Drawer/Drawer";
-import { open as openToast } from "@/ui/organisms/Toast/Toast";
 import CardForm from "@/ui/pages/cards/CardForm";
+import { Filter } from "@/ui/pages/cards/Filter";
+import { Category } from "@/types/Category";
 
 export default function Cards() {
   const title = "Ajouter une nouvelle fiche";
-  const { cards, editCard, deleteCard } = useCardContext();
+  const { cards: data, editCard, deleteCard, createCard } = useCardContext();
   const [formElement, setFormRef] = React.useState<HTMLFormElement>();
   const [isLoading, setIsLoading] = React.useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [actionLabel, setActionLabel] = React.useState("Créer la fiche");
-  const { createCard } = useCardContext();
+  const [cards, setCards] = React.useState<ICard[]>(data);
 
-  console.log(cards);
+  React.useEffect(() => {
+    if (data) {
+      setCards(data);
+    }
+  }, [data]);
+
+  const handleFilter = useCallback((filteredCards: ICard[]) => {
+    setCards(filteredCards);
+  }, []);
 
   return (
     <div>
@@ -61,35 +70,42 @@ export default function Cards() {
         </Drawer.Root>
       </AppHeader>
 
-      <Stack className="p-10 flex justify-center" direction="col">
+      <Stack className="p-10 flex justify-center" direction="col" gapy={32}>
+        <Filter
+          title="Filtrer par"
+          data={data}
+          onFilter={handleFilter}
+          filters={[
+            {
+              label: "Tag",
+              key: "tag",
+            },
+            {
+              label: "Categorie",
+              key: "category",
+              values: [
+                Category.FIRST,
+                Category.SECOND,
+                Category.THIRD,
+                Category.FOURTH,
+                Category.FIFTH,
+                Category.SIXTH,
+                Category.SEVENTH,
+              ],
+            },
+          ]}
+        />
         {cards && cards.length > 0 && (
-          <Stack direction={"col"} gapy={32}>
-            {/* <Filter
-              title="Filtrer par"
-              data={cards}
-              onFilter={(cards: ICard[]) => setCards(cards)}
-              filters={[
-                {
-                  label: "Tag",
-                  key: "tag",
-                },
-                {
-                  label: "Categorie",
-                  key: "category",
-                },
-              ]}
-            /> */}
-            <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {cards.map((card) => (
-                <Card
-                  key={card.id}
-                  data={card}
-                  onEdit={(card) => editCard(card)}
-                  onDelete={(id) => deleteCard(id)}
-                />
-              ))}
-            </div>
-          </Stack>
+          <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {cards.map((card) => (
+              <Card
+                key={card.id}
+                data={card}
+                onEdit={(card) => editCard(card)}
+                onDelete={(id) => deleteCard(id)}
+              />
+            ))}
+          </div>
         )}
 
         {cards && cards.length === 0 && (
@@ -100,7 +116,7 @@ export default function Cards() {
             className="w-full"
           >
             <EmptyStateBox
-              text="Oops vous n'avez aucune fiches"
+              text="Oops rien à afficher ici pour l'instant !"
               icon="Box"
               className="!w-full"
             />

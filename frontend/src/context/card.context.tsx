@@ -30,8 +30,6 @@ export function CardProvider({ children }: { children: ReactNode }) {
   const [cards, setCards] = React.useState<ICard[]>([]);
 
   const createCard = async (card: NewCard) => {
-    setCards((prev) => [...prev, res]);
-
     const res = await createCardRequest(card);
     if (res.id) {
       openToast({
@@ -39,6 +37,7 @@ export function CardProvider({ children }: { children: ReactNode }) {
         style: "success",
         description: "Votre fiche a bien été créer",
       });
+      setCards((prev) => [...prev, res]);
     } else {
       openToast({
         title: "Oops",
@@ -53,7 +52,7 @@ export function CardProvider({ children }: { children: ReactNode }) {
     const data = await updateCardRequest(updatedCard);
 
     if (data.id) {
-      const ucards = cards.filter(card => card.id !== updatedCard.id);
+      const ucards = cards.filter((card) => card.id !== updatedCard.id);
       openToast({
         title: "Fiche modifiée",
         description: "La fiche a bien été modifiée",
@@ -61,7 +60,7 @@ export function CardProvider({ children }: { children: ReactNode }) {
         duration: 5000,
         dismissible: true,
       });
-      setCards([...ucards, {...updatedCard, ...data}]);
+      setCards([...ucards, { ...updatedCard, ...data }]);
     } else {
       openToast({
         title: "Oops",
