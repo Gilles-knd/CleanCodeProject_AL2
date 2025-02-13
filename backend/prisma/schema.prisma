@@ -41,5 +41,5 @@ model Review {
   reviewedAt  DateTime @default(now())
   isCorrect   Boolean
   forcedValid Boolean  @default(false)
-  Card        Card     @relation(fields: [cardId], references: [id])
+  Card        Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
 }
