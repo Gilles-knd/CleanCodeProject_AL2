@@ -134,7 +134,7 @@ export function Toast() {
                         {t.title}
                       </h4>
                       {t.description && 
-                      <p className={"w-full text-gray-700 text-sm"}>{t.description}</p> }
+                      <p className={"w-full text-gray-700 text-sm"} id="toast-text">{t.description}</p> }
                     </div>
                   </div>
                   <button

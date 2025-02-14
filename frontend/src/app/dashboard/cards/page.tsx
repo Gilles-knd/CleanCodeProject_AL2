@@ -42,7 +42,12 @@ export default function Cards() {
           open={isDrawerOpen}
         >
           <Drawer.Trigger asChild>
-            <Button label={title} icon={<Plus size={16} />} position="left" />
+            <Button
+              label={title}
+              icon={<Plus size={16} />}
+              position="left"
+              id="open-card-drawer"
+            />
           </Drawer.Trigger>
 
           {/* Drawer content */}
@@ -61,6 +66,7 @@ export default function Cards() {
             <Button
               label={actionLabel}
               disabled={isLoading}
+              id="create-card"
               onClick={() => {
                 formElement?.requestSubmit();
               }}
@@ -96,16 +102,20 @@ export default function Cards() {
           ]}
         />
         {cards && cards.length > 0 && (
-          <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <ul
+            className="w-full grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+            id="card-list"
+          >
             {cards.map((card) => (
-              <Card
-                key={card.id}
-                data={card}
-                onEdit={(card) => editCard(card)}
-                onDelete={(id) => deleteCard(id)}
-              />
+              <li id="card-list-item" key={card.id}>
+                <Card
+                  data={card}
+                  onEdit={(card) => editCard(card)}
+                  onDelete={(id) => deleteCard(id)}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
         {cards && cards.length === 0 && (

@@ -77,6 +77,7 @@ export default function CardForm(props: CardFormData) {
           <TextField
             type="text"
             name="tag"
+            id="tag-field"
             placeholder="Example: TeamWork"
             className="bg-zinc-100 font-medium"
             onChange={(e) => setCard({ ...card, tag: e.target.value })}
@@ -91,6 +92,7 @@ export default function CardForm(props: CardFormData) {
           <TextField
             type="text"
             name="tag"
+            id="tag-field"
             placeholder="Example: TeamWork"
             disabled={data ? true : false}
             className="bg-zinc-100 font-medium"

@@ -31,10 +31,10 @@ export default function Card(props: CardProps) {
   return (
     <div className="w-full p-2 space-y-2 border border-solid rounded-3xl shadow">
       <div className={cn} {...rest}>
-        <h4 className={"text-zinc-900 text-lg font-medium truncate"}>
+        <h4 className={"text-zinc-900 text-lg font-medium truncate"} id={"card-question"}>
           {data.question}
         </h4>
-        <p className={"text-sm text-gray-600 truncate"}>{data.answer}</p>
+        <p className={"text-sm text-gray-600 truncate"} id="card-answer">{data.answer}</p>
       </div>
 
       <div className="flex flex-row items-center justify-between">
