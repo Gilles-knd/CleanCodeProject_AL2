@@ -149,4 +149,7 @@ npm run dev
 4. Lancer les tests
 ```bash
 npm run test
+
+# Lancer à partir de l'interface graphique
+npm run test:ui
 ```
