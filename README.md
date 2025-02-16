@@ -129,17 +129,24 @@ Créer un fichier `.env` avec pour valeur `NEXT_PUBLIC_API_URL=http://localhost:
 ```
 
 ### Lancer les test end-2-end (bonus-2)
-Placez-vous sur la branche du bonus
+1. Placez-vous sur la branche du bonus
 ```bash
  git checkout -b bonus-2
  ```
 
-Installer les dépendances 
+2. Installer les dépendances 
 ```bash
 npm i
 ```
 
-Lancer les tests
+Remarque: le backend doit être lancé avant de lancé les test
+
+3. Lancer l'application
 ```bash
-npm run test:ui
+npm run dev
+```
+
+4. Lancer les tests
+```bash
+npm run test
 ```
