@@ -1,10 +1,14 @@
+import { makeId } from "@/utils/helpers";
 import { test, expect } from "@playwright/test";
 
+// Éviter de casser le test si la card existe déjà
+const id = makeId(3);
 const CARD = {
-  question: "Pourquoi le prof de clean clode est aussi good ?",
-  answer: "C'est un GOAT c'est tout!",
+  question: `Pourquoi le prof de clean clode est aussi good ? (version:${id})`,
+  answer: `C'est un GOAT c'est tout! (version:${id})`,
   tag: "Clean Code",
 };
+
 const TOAST_TEXT_SUCCESS = "Votre fiche a bien été créer";
 
 test.describe("Création de fiches en catégorie 1", () => {
@@ -29,7 +33,7 @@ test.describe("Création de fiches en catégorie 1", () => {
     await expect(page.locator("#toast-text")).toHaveText(TOAST_TEXT_SUCCESS);
 
     // And - Vérifier que la fiche apparaît bien dans la liste
-    const createdCard =  page.locator("#card-question").last();
-     expect(await createdCard.textContent()).toBe(CARD.question);
+    const createdCard = page.locator("#card-question").last();
+    expect(await createdCard.textContent()).toBe(CARD.question);
   });
 });
