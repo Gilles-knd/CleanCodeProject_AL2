@@ -29,7 +29,23 @@ export function CardProvider({ children }: { children: ReactNode }) {
   const { isLoading, data, error } = useFetch<ICard[]>("cards", getCards);
   const [cards, setCards] = React.useState<ICard[]>([]);
 
+  const isDuplicated = (card: NewCard) => {
+    const founded =
+      cards.filter((c) => c.question == card.question && c.answer === c.answer)
+        .length > 0;
+    return founded;
+  };
+
   const createCard = async (card: NewCard) => {
+    if (isDuplicated(card)) {
+      openToast({
+        title: "Oops",
+        style: "error",
+        description: "Une fiche similaire existe déjà",
+      });
+      return;
+    }
+
     const res = await createCardRequest(card);
     if (res.id) {
       openToast({
