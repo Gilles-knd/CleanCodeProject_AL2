@@ -24,18 +24,19 @@ export class HttpService {
       });
 
       if (!response.ok) {
-         throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+        throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
       }
 
-      if (response.status == 204) {
-        return new Promise((resolve, rejects) => {
-          resolve({ ok: true })
-        });
+      if (response.status === 204) {
+        return { ok: true } as T;
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data as T;
+
     } catch (error) {
       console.error("Request failed:", error);
+      throw error; // Re-throw to handle errors in calling code
     }
   }
 

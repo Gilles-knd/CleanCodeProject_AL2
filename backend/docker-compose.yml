@@ -1,5 +1,4 @@
 name: cleancodeproject-api
-version: '3.8'
 services:
   postgres:
     image: postgres:15

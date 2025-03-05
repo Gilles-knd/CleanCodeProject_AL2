@@ -18,6 +18,7 @@ import {
   getTodayQuizzRequest,
 } from "@/services/fetch.service";
 import Link from "next/link";
+import { LoadinSpinner } from "@/ui/molecules/LoadingSpinner/LoadingSpinner";
 
 export default function QuizzPage() {
   const { isLoading, data, error } = useFetch("quizz", getTodayQuizzRequest);
@@ -76,6 +77,10 @@ export default function QuizzPage() {
   };
 
   const closeQuizz = () => {};
+
+  if(isLoading) {
+    return <LoadinSpinner/>
+  }
 
   return (
     <div className="h-full w-full">
