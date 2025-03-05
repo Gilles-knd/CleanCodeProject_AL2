@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true
   },
   
+  output: "export",
   /* config options here */
   async redirects() {
     return [
